@@ -4,26 +4,18 @@
   Beer-ware License: You can do whatever you want with this sketch.
                      If we meet someday, you can buy me a beer.
                      
-  QuadSetpper Example Sketch. For use with an Arduino Mega2560 and 
-  a 1.8 degree bipolar stepper motor.
+  QuadSetpper Example Sketch. For use with a 1.8 degree bipolar stepper motor.
 
-  You must connect the STP pin for each motor as shown below.
-  For rest of the pins, you choose where they go. 
-
-  Motor1 STP pin: mega pin 11
-  Motor2 STP pin: meag pin 5
-  Motor3 STP pin: meag pin 6
-  Motor4 STP pin: mega pin 46
-  
   Library Usage: 
   
-  motor_pins(x,y,z,l,m,n)
+  motor_pins(x,y,z,l,m,n,o)
   x: motor channel number
   y: enable pin assignment
   z: direction pin assignment
   l: MS1 pin assignment
   m: MS2 pin assignment
   n: MS3 pin assignment
+  o: step pin
   
   motor_go(x,y,z,l)
   x: motor channel number
@@ -46,26 +38,25 @@
 quadstep quadstep;
 
 void setup() {
-  
   // assign the pin connections
-  quadstep.motor_pins(1,A1,36,A8,A9,A10); //ch 1
-  quadstep.motor_pins(2,10,9,8,7,4);      //ch 2
-  quadstep.motor_pins(3,22,23,24,25,26);  //ch 3
-  quadstep.motor_pins(4,27,28,29,30,31);  //ch 4
+  quadstep.motor_pins(1,0,1,2,3,4,9); //ch 1
+  quadstep.motor_pins(2,7,6,A0,A1,A2,5);      //ch 2
+  quadstep.motor_pins(3,12,13,A0,A1,A2,10);  //ch 3
+  quadstep.motor_pins(4,4,27,A0,A1,A2,11);  //ch 4
  
 }
 
 //1.8deg = 1step
 void loop() {
   
-  // step motor 4 for 200 increments CW
+  // step motor 2 for 200 increments CW
   quadstep.motor_go(2,1,-200,2);
   delay(500);
-  // step motor 4 for 200 increments CCW
+  // step motor 2 for 200 increments CCW
   quadstep.motor_go(2,1,200,2);
   delay(500);
  
   // holds the motor in one position with full torque/current
-  //motor.stall(4);
+  //motor.stall(2);
   //delay(500); 
 }

@@ -9,9 +9,6 @@
 #include "WProgram.h"
 #include "quadstep.h"
 
-#define sbi(var, mask)   ((var) |= (uint8_t)(1 << mask))
-#define cbi(var, mask)   ((var) &= (uint8_t)~(1 << mask))
-
 #define STEPMIN	800
 
 quadstep::quadstep()
@@ -22,10 +19,10 @@ quadstep::quadstep()
 	pinMode(46, OUTPUT); //PL3
 	
 	//make sure the step lines are low on startup
-	cbi(PORTB, 5);
-	cbi(PORTE, 3);
-	cbi(PORTH, 3);
-	cbi(PORTL, 3);
+	digitalWrite(_motor_step_1, LOW);
+	digitalWrite(_motor_step_2, LOW);
+	digitalWrite(_motor_step_3, LOW);
+	digitalWrite(_motor_step_4, LOW);
 	
 	Serial.begin(9600);
 }
@@ -33,12 +30,13 @@ quadstep::quadstep()
 /////////////////////////////////////////////////////////
 ///////   Pin connections ///////////////////////////////
 /////////////////////////////////////////////////////////
-void quadstep::motor_pins(int motnum,int motor_enable,int motor_dir,int motor_ms1,int motor_ms2,int motor_ms3)
+void quadstep::motor_pins(int motnum,int motor_enable,int motor_dir,int motor_ms1,int motor_ms2,int motor_ms3, int motor_step)
 {	
 	if(motnum == 1)
 	{
 		pinMode(motor_enable, OUTPUT);
 		pinMode(motor_dir, OUTPUT);
+		pinMode(motor_step, OUTPUT);
 		pinMode(motor_ms1, OUTPUT);
 		pinMode(motor_ms2, OUTPUT);
 		pinMode(motor_ms3, OUTPUT);
@@ -47,6 +45,7 @@ void quadstep::motor_pins(int motnum,int motor_enable,int motor_dir,int motor_ms
 		digitalWrite(motor_dir, LOW);
 		_motor_enable_1 = motor_enable;
 		_motor_dir_1 = motor_dir;
+		_motor_step_1 = motor_step;
 		_motor_ms_11 = motor_ms1;
 		_motor_ms_12 = motor_ms2;
 		_motor_ms_13 = motor_ms3;
@@ -55,6 +54,7 @@ void quadstep::motor_pins(int motnum,int motor_enable,int motor_dir,int motor_ms
 	{
 		pinMode(motor_enable, OUTPUT);
 		pinMode(motor_dir, OUTPUT);
+		pinMode(motor_step, OUTPUT);
 		pinMode(motor_ms1, OUTPUT);
 		pinMode(motor_ms2, OUTPUT);
 		pinMode(motor_ms3, OUTPUT);
@@ -63,6 +63,7 @@ void quadstep::motor_pins(int motnum,int motor_enable,int motor_dir,int motor_ms
 		digitalWrite(motor_dir, LOW);
 		_motor_enable_2 = motor_enable;
 		_motor_dir_2 = motor_dir;
+		_motor_step_2 = motor_step;
 		_motor_ms_21 = motor_ms1;
 		_motor_ms_22 = motor_ms2;
 		_motor_ms_23 = motor_ms3;
@@ -71,6 +72,7 @@ void quadstep::motor_pins(int motnum,int motor_enable,int motor_dir,int motor_ms
 	{
 		pinMode(motor_enable, OUTPUT);
 		pinMode(motor_dir, OUTPUT);
+		pinMode(motor_step, OUTPUT);
 		pinMode(motor_ms1, OUTPUT);
 		pinMode(motor_ms2, OUTPUT);
 		pinMode(motor_ms3, OUTPUT);
@@ -79,6 +81,7 @@ void quadstep::motor_pins(int motnum,int motor_enable,int motor_dir,int motor_ms
 		digitalWrite(motor_dir, LOW);
 		_motor_enable_3 = motor_enable;
 		_motor_dir_3 = motor_dir;
+		_motor_step_3 = motor_step;
 		_motor_ms_31 = motor_ms1;
 		_motor_ms_32 = motor_ms2;
 		_motor_ms_33 = motor_ms3;
@@ -87,6 +90,7 @@ void quadstep::motor_pins(int motnum,int motor_enable,int motor_dir,int motor_ms
 	{
 		pinMode(motor_enable, OUTPUT);
 		pinMode(motor_dir, OUTPUT);
+		pinMode(motor_step, OUTPUT);
 		pinMode(motor_ms1, OUTPUT);
 		pinMode(motor_ms2, OUTPUT);
 		pinMode(motor_ms3, OUTPUT);
@@ -95,6 +99,7 @@ void quadstep::motor_pins(int motnum,int motor_enable,int motor_dir,int motor_ms
 		digitalWrite(motor_dir, LOW);
 		_motor_enable_4 = motor_enable;
 		_motor_dir_4 = motor_dir;
+		_motor_step_4 = motor_step;
 		_motor_ms_41 = motor_ms1;
 		_motor_ms_42 = motor_ms2;
 		_motor_ms_43 = motor_ms3;
@@ -132,12 +137,12 @@ void quadstep::motor_go(int motnum, int step_size, int number_of_steps, int torq
 			for(int i=1;i<=number_of_steps;i++)
 			{
 				//low to high transition moves one step
-				sbi(PORTB, 5);
+				digitalWrite(_motor_step_1, HIGH);
 				delayMicroseconds(step1); //high time
-				cbi(PORTB, 5);
+				digitalWrite(_motor_step_1, LOW);
 				delayMicroseconds(step1); // low time
 			}
-			cbi(PORTB, 5);
+			digitalWrite(_motor_step_1, LOW);
 			digitalWrite(_motor_enable_1, HIGH);    // disable motor 1
 		}
 		
@@ -154,12 +159,12 @@ void quadstep::motor_go(int motnum, int step_size, int number_of_steps, int torq
 			for(int i=1;i<=number_of_steps;i++)
 			{
 				//low to high transition moves one step
-				sbi(PORTB, 5);
+				digitalWrite(_motor_step_1, HIGH);
 				delayMicroseconds(step2); 
-				cbi(PORTB, 5);
+				digitalWrite(_motor_step_1, LOW);
 				delayMicroseconds(step2);
 			}
-			cbi(PORTB, 5);
+			digitalWrite(_motor_step_1, LOW);
 			digitalWrite(_motor_enable_1, HIGH);    
 		}
 		
@@ -176,12 +181,12 @@ void quadstep::motor_go(int motnum, int step_size, int number_of_steps, int torq
 			for(int i=1;i<=number_of_steps;i++)
 			{
 				//low to high transition moves one step
-				sbi(PORTB, 5);
+				digitalWrite(_motor_step_1, HIGH);
 				delayMicroseconds(step4);
-				cbi(PORTB, 5);
+				digitalWrite(_motor_step_1, LOW);
 				delayMicroseconds(step4); 
 			}
-			cbi(PORTB, 5);
+			digitalWrite(_motor_step_1, LOW);
 			digitalWrite(_motor_enable_1, HIGH);    
 		}
 		else if(step_size == 8)
@@ -197,12 +202,12 @@ void quadstep::motor_go(int motnum, int step_size, int number_of_steps, int torq
 			for(int i=1;i<=number_of_steps;i++)
 			{
 				//low to high transition moves one step
-				sbi(PORTB, 5);
+				digitalWrite(_motor_step_1, HIGH);
 				delayMicroseconds(step8);
-				cbi(PORTB, 5);
+				digitalWrite(_motor_step_1, LOW);
 				delayMicroseconds(step8); 
 			}
-			cbi(PORTB, 5);
+			digitalWrite(_motor_step_1, LOW);
 			digitalWrite(_motor_enable_1, HIGH);    
 		}
 		else if(step_size == 16)
@@ -218,12 +223,12 @@ void quadstep::motor_go(int motnum, int step_size, int number_of_steps, int torq
 			for(int i=1;i<=number_of_steps;i++)
 			{
 				//low to high transition moves one step
-				sbi(PORTB, 5);
+				digitalWrite(_motor_step_1, HIGH);
 				delayMicroseconds(step16); 
-				cbi(PORTB, 5);
+				digitalWrite(_motor_step_1, LOW);
 				delayMicroseconds(step16); 
 			}
-			cbi(PORTB, 5);
+			digitalWrite(_motor_step_1, LOW);
 			digitalWrite(_motor_enable_1, HIGH);   
 		}
 		else Serial.println("error: incorrect value for step_size"); //print error code
@@ -251,12 +256,12 @@ void quadstep::motor_go(int motnum, int step_size, int number_of_steps, int torq
 			for(int i=1;i<=number_of_steps;i++)
 			{
 				//low to high transition moves one step
-				sbi(PORTE, 3);
+				digitalWrite(_motor_step_2, HIGH);
 				delayMicroseconds(step1); 
-				cbi(PORTE, 3);
+				digitalWrite(_motor_step_2, LOW);
 				delayMicroseconds(step1); 
 			}
-			cbi(PORTE, 3);
+			digitalWrite(_motor_step_2, LOW);
 			digitalWrite(_motor_enable_2, HIGH);    // disable motor 1
 		}
 		
@@ -273,12 +278,12 @@ void quadstep::motor_go(int motnum, int step_size, int number_of_steps, int torq
 			for(int i=1;i<=number_of_steps;i++)
 			{
 				//low to high transition moves one step
-				sbi(PORTE, 3);
+				digitalWrite(_motor_step_2, HIGH);
 				delayMicroseconds(step2); //low time
-				cbi(PORTE, 3);
+				digitalWrite(_motor_step_2, LOW);
 				delayMicroseconds(step2); // high time
 			}
-			cbi(PORTE, 3);
+			digitalWrite(_motor_step_2, LOW);
 			digitalWrite(_motor_enable_2, HIGH);    
 		}
 		
@@ -295,12 +300,12 @@ void quadstep::motor_go(int motnum, int step_size, int number_of_steps, int torq
 			for(int i=1;i<=number_of_steps;i++)
 			{
 				//low to high transition moves one step
-				sbi(PORTE, 3);
+				digitalWrite(_motor_step_2, HIGH);
 				delayMicroseconds(step4); //low time
-				cbi(PORTE, 3);
+				digitalWrite(_motor_step_2, LOW);
 				delayMicroseconds(step4); // high time
 			}
-			cbi(PORTE, 3);
+			digitalWrite(_motor_step_2, LOW);
 			digitalWrite(_motor_enable_2, HIGH);    
 		}
 		else if(step_size == 8)
@@ -316,12 +321,12 @@ void quadstep::motor_go(int motnum, int step_size, int number_of_steps, int torq
 			for(int i=1;i<=number_of_steps;i++)
 			{
 				//low to high transition moves one step
-				sbi(PORTE, 3);
+				digitalWrite(_motor_step_2, HIGH);
 				delayMicroseconds(step8); //low time
-				cbi(PORTE, 3);
+				digitalWrite(_motor_step_2, LOW);
 				delayMicroseconds(step8); // high time
 			}
-			cbi(PORTE, 3);
+			digitalWrite(_motor_step_2, LOW);
 			digitalWrite(_motor_enable_2, HIGH);    
 		}
 		else if(step_size == 16)
@@ -337,12 +342,12 @@ void quadstep::motor_go(int motnum, int step_size, int number_of_steps, int torq
 			for(int i=1;i<=number_of_steps;i++)
 			{
 				//low to high transition moves one step
-				sbi(PORTE, 3);
+				digitalWrite(_motor_step_2, HIGH);
 				delayMicroseconds(step16); //low time
-				cbi(PORTE, 3);
+				digitalWrite(_motor_step_2, LOW);
 				delayMicroseconds(step16); // high time
 			}
-			cbi(PORTE, 3);
+			digitalWrite(_motor_step_2, LOW);
 			digitalWrite(_motor_enable_2, HIGH);   
 		}
 		else Serial.println("error: incorrect value for step_size"); //print error code
@@ -370,12 +375,12 @@ void quadstep::motor_go(int motnum, int step_size, int number_of_steps, int torq
 			for(int i=1;i<=number_of_steps;i++)
 			{
 				//low to high transition moves one step
-				sbi(PORTH, 3);
+				digitalWrite(_motor_step_3, HIGH);
 				delayMicroseconds(step1); //high time
-				cbi(PORTH, 3);
+				digitalWrite(_motor_step_3, LOW);
 				delayMicroseconds(step1); //low time
 			}
-			cbi(PORTH, 3);
+			digitalWrite(_motor_step_3, LOW);
 			digitalWrite(_motor_enable_3, HIGH);    // disable motor 1
 		}
 		
@@ -392,12 +397,12 @@ void quadstep::motor_go(int motnum, int step_size, int number_of_steps, int torq
 			for(int i=1;i<=number_of_steps;i++)
 			{
 				//low to high transition moves one step
-				sbi(PORTH, 3);
+				digitalWrite(_motor_step_3, HIGH);
 				delayMicroseconds(step2); //low time
-				cbi(PORTH, 3);
+				digitalWrite(_motor_step_3, LOW);
 				delayMicroseconds(step2); // high time
 			}
-			cbi(PORTH, 3);
+			digitalWrite(_motor_step_3, LOW);
 			digitalWrite(_motor_enable_3, HIGH);    
 		}
 		
@@ -414,12 +419,12 @@ void quadstep::motor_go(int motnum, int step_size, int number_of_steps, int torq
 			for(int i=1;i<=number_of_steps;i++)
 			{
 				//low to high transition moves one step
-				sbi(PORTH, 3);
+				digitalWrite(_motor_step_3, HIGH);
 				delayMicroseconds(step4); //low time
-				cbi(PORTH, 3);
+				digitalWrite(_motor_step_3, LOW);
 				delayMicroseconds(step4); // high time
 			}
-			cbi(PORTH, 3);
+			digitalWrite(_motor_step_3, LOW);
 			digitalWrite(_motor_enable_3, HIGH);    
 		}
 		else if(step_size == 8)
@@ -435,12 +440,12 @@ void quadstep::motor_go(int motnum, int step_size, int number_of_steps, int torq
 			for(int i=1;i<=number_of_steps;i++)
 			{
 				//low to high transition moves one step
-				sbi(PORTH, 3);
+				digitalWrite(_motor_step_3, HIGH);
 				delayMicroseconds(step8); //low time
-				cbi(PORTH, 3);
+				digitalWrite(_motor_step_3, LOW);
 				delayMicroseconds(step8); // high time
 			}
-			cbi(PORTH, 3);
+			digitalWrite(_motor_step_3, LOW);
 			digitalWrite(_motor_enable_3, HIGH);    
 		}
 		else if(step_size == 16)
@@ -456,12 +461,12 @@ void quadstep::motor_go(int motnum, int step_size, int number_of_steps, int torq
 			for(int i=1;i<=number_of_steps;i++)
 			{
 				//low to high transition moves one step
-				sbi(PORTH, 3);
+				digitalWrite(_motor_step_3, HIGH);
 				delayMicroseconds(step16); //low time
-				cbi(PORTH, 3);
+				digitalWrite(_motor_step_3, LOW);
 				delayMicroseconds(step16); // high time
 			}
-			cbi(PORTH, 3);
+			digitalWrite(_motor_step_3, LOW);
 			digitalWrite(_motor_enable_3, HIGH);   
 		}
 		else Serial.println("error: incorrect value for step_size"); //print error code
@@ -489,12 +494,12 @@ void quadstep::motor_go(int motnum, int step_size, int number_of_steps, int torq
 			for(int i=1;i<=number_of_steps;i++)
 			{
 				//low to high transition moves one step
-				sbi(PORTL, 3);
+				digitalWrite(_motor_step_4, HIGH);
 				delayMicroseconds(step1); 
-				cbi(PORTL, 3);
+				digitalWrite(_motor_step_4, LOW);
 				delayMicroseconds(step1); 
 			}
-			cbi(PORTL, 3);
+			digitalWrite(_motor_step_4, LOW);
 			digitalWrite(_motor_enable_4, HIGH);    
 		}
 
@@ -511,12 +516,12 @@ void quadstep::motor_go(int motnum, int step_size, int number_of_steps, int torq
 			for(int i=1;i<=number_of_steps;i++)
 			{
 				//low to high transition moves one step
-				sbi(PORTL, 3);
+				digitalWrite(_motor_step_4, HIGH);
 				delayMicroseconds(step2); 
-				cbi(PORTL, 3);
+				digitalWrite(_motor_step_4, LOW);
 				delayMicroseconds(step2); 
 			}
-			cbi(PORTL, 3);
+			digitalWrite(_motor_step_4, LOW);
 			digitalWrite(_motor_enable_4, HIGH);    
 		}
 
@@ -533,12 +538,12 @@ void quadstep::motor_go(int motnum, int step_size, int number_of_steps, int torq
 			for(int i=1;i<=number_of_steps;i++)
 			{
 				//low to high transition moves one step
-				sbi(PORTL, 3);
+				digitalWrite(_motor_step_4, HIGH);
 				delayMicroseconds(step4); 
-				cbi(PORTL, 3);
+				digitalWrite(_motor_step_4, LOW);
 				delayMicroseconds(step4); 
 			}
-			cbi(PORTL, 3);
+			digitalWrite(_motor_step_4, LOW);
 			digitalWrite(_motor_enable_4, HIGH);    
 		}
 		else if(step_size == 8)
@@ -554,12 +559,12 @@ void quadstep::motor_go(int motnum, int step_size, int number_of_steps, int torq
 			for(int i=1;i<=number_of_steps;i++)
 			{
 				//low to high transition moves one step
-				sbi(PORTL, 3);
+				digitalWrite(_motor_step_4, HIGH);
 				delayMicroseconds(step8); 
-				cbi(PORTL, 3);
+				digitalWrite(_motor_step_4, LOW);
 				delayMicroseconds(step8); 
 			}
-			cbi(PORTL, 3);
+			digitalWrite(_motor_step_4, LOW);
 			digitalWrite(_motor_enable_4, HIGH);    
 		}
 		else if(step_size == 16)
@@ -575,12 +580,12 @@ void quadstep::motor_go(int motnum, int step_size, int number_of_steps, int torq
 			for(int i=1;i<=number_of_steps;i++)
 			{
 				//low to high transition moves one step
-				sbi(PORTL, 3);
+				digitalWrite(_motor_step_4, HIGH);
 				delayMicroseconds(step16); 
-				cbi(PORTL, 3);
+				digitalWrite(_motor_step_4, LOW);
 				delayMicroseconds(step16); 
 			}
-			cbi(PORTL, 3);
+			digitalWrite(_motor_step_4, LOW);
 			digitalWrite(_motor_enable_4, HIGH);   
 		}
 		else Serial.println("error: incorrect value for step_size"); //print error code
