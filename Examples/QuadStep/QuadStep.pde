@@ -50,10 +50,10 @@ void setup() {
 void loop() {
   
   // step motor 2 for 200 increments CW
-  quadstep.motor_go(2,1,-200,2);
+  quadstep.motor_go(2,FULL,-200,2);
   delay(500);
   // step motor 2 for 200 increments CCW
-  quadstep.motor_go(2,1,200,2);
+  quadstep.motor_go(2,FULL,200,2);
   delay(500);
  
   // holds the motor in one position with full torque/current

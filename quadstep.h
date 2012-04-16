@@ -10,24 +10,27 @@
 #define quadstep_h
 
 #include "WProgram.h"
+enum step_modes_t {
+	FULL = 1,
+	HALF = 2,
+	QUARTER = 4,
+	EIGHTH = 8,
+	SIXTEENTH = 16
+};
 
 class quadstep
 {
   public:
 	quadstep();
 	void motor_pins(int motnum,int motor_enable,int motor_dir,int motor_ms1, int motor_ms2, int motor_ms3, int motor_step);
-    void motor_go(int motnum, int step_size, int number_of_steps, int torque);
+    void motor_go(int motnum, step_modes_t step_size, int number_of_steps, int torque);
 	void stall(int motnum);
 	//void motor1rpm(int direction,int level);
  
   private:
-	void current_control(int step);
+	void current_control(step_modes_t step_size);
 	int _torque;
-	int step1;
-	int step2;
-	int step4;
-	int step8;
-	int step16;
+	int step;
 	
 	int _motor_enable_1;
 	int _motor_dir_1;
