@@ -13,17 +13,15 @@ step_modes_t	KEYWORD1
 # Methods and Functions (KEYWORD2)
 #######################################
 
-motor1_pins	KEYWORD2
-motor2_pins	KEYWORD2
-motor3_pins	KEYWORD2
-motor4_pins	KEYWORD2
+motor_pins	KEYWORD2
 
-motor1 KEYWORD2
-motor2 KEYWORD2
-motor3 KEYWORD2
-motor4 KEYWORD2
+motor KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
 #######################################
-
+FULL	LITERAL1
+HALF	LITERAL1
+QUARTER	LITERAL1
+EIGHTH	LITERAL1
+SIXTEENTH	LITERAL1
