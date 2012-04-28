@@ -14,31 +14,38 @@
 quadstep::quadstep()
 {	
 	//make sure the step lines are low on startup
-	digitalWrite(_motor_step, LOW);
+	digitalWrite(_step_pin, LOW);
 	Serial.begin(9600);
 }
 
 /////////////////////////////////////////////////////////
 ///////   Pin connections ///////////////////////////////
 /////////////////////////////////////////////////////////
-void quadstep::motor_pins(int motor_enable,int motor_dir,int motor_ms1,int motor_ms2,int motor_ms3, int motor_step)
-{	
-	pinMode(motor_enable, OUTPUT);
-	pinMode(motor_dir, OUTPUT);
-	pinMode(motor_step, OUTPUT);
-	pinMode(motor_ms1, OUTPUT);
-	pinMode(motor_ms2, OUTPUT);
-	pinMode(motor_ms3, OUTPUT);
+void quadstep::set_enable_pin(int enable_pin) {
+	pinMode(enable_pin, OUTPUT);
+	digitalWrite(enable_pin, HIGH);
+	_enable_pin = enable_pin;
+}
 
-	digitalWrite(motor_enable, HIGH);
-	digitalWrite(motor_dir, LOW);
+void quadstep::set_direction_pin(int direction_pin) {
+	pinMode(direction_pin, OUTPUT);
+	digitalWrite(direction_pin, LOW);
+	_direction_pin = direction_pin;
+}
 
-	_motor_enable = motor_enable;
-	_motor_dir = motor_dir;
-	_motor_step = motor_step;
-	_motor_ms1 = motor_ms1;
-	_motor_ms2 = motor_ms2;
-	_motor_ms3 = motor_ms3;
+void quadstep::set_step_pin(int step_pin) {
+	pinMode(step_pin, OUTPUT);
+	_step_pin = step_pin;
+}
+
+void quadstep::set_microstep_select_pins(int ms1_pin,int ms2_pin,int ms3_pin)
+{
+	pinMode(ms1_pin, OUTPUT);
+	pinMode(ms2_pin, OUTPUT);
+	pinMode(ms3_pin, OUTPUT);
+	_ms1_pin = ms1_pin;
+	_ms2_pin = ms2_pin;
+	_ms3_pin = ms3_pin;
 }
 
 /////////////////////////////////////////////////////////
@@ -64,7 +71,7 @@ void quadstep::stall()
 
 void quadstep::set_direction(int number_of_steps) {
 	bool dir = (number_of_steps > 0) ? HIGH : LOW;
-	digitalWrite(_motor_dir, dir);
+	digitalWrite(_direction_pin, dir);
 }
 
 void quadstep::set_speed(step_modes_t step_size, int torque)
@@ -74,41 +81,41 @@ void quadstep::set_speed(step_modes_t step_size, int torque)
 
 void quadstep::set_microstep_format(step_modes_t step_size) {
 	if (step_size == FULL) {
-		digitalWrite(_motor_ms1, LOW);
-		digitalWrite(_motor_ms2, LOW);
-		digitalWrite(_motor_ms3, LOW);
+		digitalWrite(_ms1_pin, LOW);
+		digitalWrite(_ms2_pin, LOW);
+		digitalWrite(_ms3_pin, LOW);
 	} else if (step_size == HALF) {
-		digitalWrite(_motor_ms1, HIGH);
-		digitalWrite(_motor_ms2, LOW);
-		digitalWrite(_motor_ms3, LOW);
+		digitalWrite(_ms1_pin, HIGH);
+		digitalWrite(_ms2_pin, LOW);
+		digitalWrite(_ms3_pin, LOW);
 	} else if (step_size == QUARTER) {
-		digitalWrite(_motor_ms1, LOW);
-		digitalWrite(_motor_ms2, HIGH);
-		digitalWrite(_motor_ms3, LOW);
+		digitalWrite(_ms1_pin, LOW);
+		digitalWrite(_ms2_pin, HIGH);
+		digitalWrite(_ms3_pin, LOW);
 	} else if (step_size == EIGHTH) {
-		digitalWrite(_motor_ms1, HIGH);
-		digitalWrite(_motor_ms2, HIGH);
-		digitalWrite(_motor_ms3, LOW);
+		digitalWrite(_ms1_pin, HIGH);
+		digitalWrite(_ms2_pin, HIGH);
+		digitalWrite(_ms3_pin, LOW);
 	} else if (step_size == SIXTEENTH) {
-		digitalWrite(_motor_ms1, HIGH);
-		digitalWrite(_motor_ms2, HIGH);
-		digitalWrite(_motor_ms3, HIGH);
+		digitalWrite(_ms1_pin, HIGH);
+		digitalWrite(_ms2_pin, HIGH);
+		digitalWrite(_ms3_pin, HIGH);
 	} else{
 		Serial.println("error: incorrect value for step_size");
 	}
 }
 
 void quadstep::enable() {
-	digitalWrite(_motor_enable, LOW);
+	digitalWrite(_enable_pin, LOW);
 }
 
 void quadstep::step() {
-	digitalWrite(_motor_step, HIGH);
+	digitalWrite(_step_pin, HIGH);
 	delayMicroseconds (pulse_width); //low time
-	digitalWrite(_motor_step, LOW);
+	digitalWrite(_step_pin, LOW);
 	delayMicroseconds(pulse_width); // high time
 }
 
 void quadstep::disable() {
-	digitalWrite(_motor_enable, HIGH);
+	digitalWrite(_enable_pin, HIGH);
 }

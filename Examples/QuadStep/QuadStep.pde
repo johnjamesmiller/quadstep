@@ -4,27 +4,23 @@
   Beer-ware License: You can do whatever you want with this sketch.
                      If we meet someday, you can buy me a beer.
                      
-  QuadSetpper Example Sketch. For use with a 1.8 degree bipolar stepper motor.
+  QuadSetpper Example Sketch. For use with a stepper motor.
 
   Library Usage: 
-  
-  motor_pins(y,z,l,m,n,o)
-  y: enable pin assignment
-  z: direction pin assignment
-  l: MS1 pin assignment
-  m: MS2 pin assignment
-  n: MS3 pin assignment
-  o: step pin
-  
-  motor_go(y,z,l)
-  y: step size: 1, 2, 4, 8, or 16
+
+  set_enable_pin(enable_pin)
+  set_direction_pin(direction_pin)
+  set_step_pin(step_pin)
+  set_microstep_select_pins(ms1_pin,ms2_pin,ms3_pin)
+
+  go(y,z,l)
+  y: step size: FULL, HALF, QUARTER, EIGHTH, or SIXTEENTH
   z: increments for given step size
      for full step: 1 increment = 1.8deg
      for half step: 1 increment = 0.9deg and so on
      negaitve numbers rotate in the opposite direction
   l: torque/speed (0-10), 0 is high speed/low torque/low current
                           10 is low speed/high torque/high current (2.0A max)
-                      
   stall()
 */
 
@@ -39,13 +35,27 @@ quadstep motor4;
 
 void setup() {
   // assign the pin connections
-  motor1.motor_pins(0,1,2,3,4,9); //ch 1
-  motor2.motor_pins(7,6,A0,A1,A2,5);      //ch 2
-  motor3.motor_pins(12,13,A0,A1,A2,10);  //ch 3
-  motor4.motor_pins(4,27,A0,A1,A2,11);  //ch 4
+  motor1.set_enable_pin(0);
+  motor1.set_direction_pin(1);
+  motor1.set_step_pin(9);
+  motor1.set_microstep_select_pins(2,3,4);
+  
+  motor2.set_enable_pin(7);
+  motor2.set_direction_pin(6);
+  motor2.set_step_pin(5);
+  motor2.set_microstep_select_pins(A0,A1,A2);
+  
+  motor3.set_enable_pin(12);
+  motor3.set_direction_pin(13);
+  motor3.set_step_pin(10);
+  motor3.set_microstep_select_pins(A0,A1,A2);
+  
+  motor4.set_enable_pin(4);
+  motor4.set_direction_pin(27);
+  motor4.set_step_pin(11);
+  motor4.set_microstep_select_pins(A0,A1,A2);
 }
 
-//1.8deg = 1step
 void loop() {
   
   // step motor 2 for 200 increments CW

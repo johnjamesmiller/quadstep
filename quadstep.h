@@ -33,9 +33,12 @@ class quadstep
 {
   public:
 	quadstep();
-	void motor_pins(int motor_enable,int motor_dir,int motor_ms1, int motor_ms2, int motor_ms3, int motor_step);
     void go(step_modes_t step_size, int number_of_steps, int torque);
 	void stall();
+	void set_enable_pin(int enable_pin);
+	void set_direction_pin(int direction_pin);
+	void set_step_pin(int step_pin);
+	void set_microstep_select_pins(int ms1_pin,int ms2_pin,int ms3_pin);
 	//void motor1rpm(int direction,int level);
  
   private:
@@ -46,12 +49,11 @@ class quadstep
 	void step();
 	void disable();
 	int pulse_width;
-	
-	int _motor_enable;
-	int _motor_dir;
-	int _motor_step;
-	int _motor_ms1;
-	int _motor_ms2;
-	int _motor_ms3;
+	int _enable_pin;
+	int _direction_pin;
+	int _step_pin;
+	int _ms1_pin;
+	int _ms2_pin;
+	int _ms3_pin;
 };
 #endif
