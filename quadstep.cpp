@@ -1,7 +1,7 @@
 /*
 
 	created by Aaron Weiss, SparkFun electronics 2011
-	
+	modified by John Miller, johnjamesmiller.com 2012
 	Beerware - do what you wish with this ish
 
 */

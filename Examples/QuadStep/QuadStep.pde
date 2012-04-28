@@ -1,6 +1,7 @@
 /*
   SparkFun Electronics 2011
   Aaron Weiss, aaron at sparkfun dot com
+  John Miller, johnjamesmiller.com
   Beer-ware License: You can do whatever you want with this sketch.
                      If we meet someday, you can buy me a beer.
                      
