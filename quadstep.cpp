@@ -46,9 +46,8 @@ void quadstep::motor_pins(int motor_enable,int motor_dir,int motor_ms1,int motor
 /////////////////////////////////////////////////////////
 void quadstep::go(step_modes_t step_size, int number_of_steps, int torque)
 {
-	_torque = torque;
 	set_direction(number_of_steps);
-	set_speed(step_size);
+	set_speed(step_size, torque);
 	set_microstep_format(step_size);
 	enable();
 	for(int i=1;i<=abs(number_of_steps);i++)
@@ -68,9 +67,9 @@ void quadstep::set_direction(int number_of_steps) {
 	digitalWrite(_motor_dir, dir);
 }
 
-void quadstep::set_speed(step_modes_t step_size)
+void quadstep::set_speed(step_modes_t step_size, int torque)
 {
-		pulse_width = STEPMIN + (_torque * 260) / step_size;
+		pulse_width = STEPMIN + (torque * 260) / step_size;
 }
 
 void quadstep::set_microstep_format(step_modes_t step_size) {

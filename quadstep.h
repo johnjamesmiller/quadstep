@@ -39,13 +39,12 @@ class quadstep
 	//void motor1rpm(int direction,int level);
  
   private:
-	void set_speed(step_modes_t step_size);
-	void set_microstep_format(step_modes_t step_size);
 	void set_direction(int number_of_steps);
-	void step();
+	void set_speed(step_modes_t step_size, int torque);
+	void set_microstep_format(step_modes_t step_size);
 	void enable();
+	void step();
 	void disable();
-	int _torque;
 	int pulse_width;
 	
 	int _motor_enable;
