@@ -15,7 +15,6 @@ quadstep::quadstep()
 {	
 	//make sure the step lines are low on startup
 	digitalWrite(_motor_step, LOW);
-	
 	Serial.begin(9600);
 }
 
@@ -45,70 +44,72 @@ void quadstep::motor_pins(int motor_enable,int motor_dir,int motor_ms1,int motor
 /////////////////////////////////////////////////////////
 ///////   Motor settings  ///////////////////////////////
 /////////////////////////////////////////////////////////
-void quadstep::motor_go(step_modes_t step_size, int number_of_steps, int torque)
+void quadstep::go(step_modes_t step_size, int number_of_steps, int torque)
 {
 	_torque = torque;
-	
-	// sets direction of rotation
-	int dir = (number_of_steps > 0) ? HIGH : LOW;
-	number_of_steps = abs(number_of_steps);
-
+	set_direction(number_of_steps);
 	set_speed(step_size);
-
-	digitalWrite(_motor_dir, dir);
-
-	// check to see what setp size was selected
-	if(step_size == FULL)
+	set_microstep_format(step_size);
+	enable();
+	for(int i=1;i<=abs(number_of_steps);i++)
 	{
-		digitalWrite(_motor_ms1, LOW);
-		digitalWrite(_motor_ms2, LOW);
-		digitalWrite(_motor_ms3, LOW);
+		step();
 	}
-	else if(step_size == HALF)
-	{
-		digitalWrite(_motor_ms1, HIGH);
-		digitalWrite(_motor_ms2, LOW);
-		digitalWrite(_motor_ms3, LOW);
-	}
-	else if(step_size == QUARTER)
-	{
-		digitalWrite(_motor_ms1, LOW);
-		digitalWrite(_motor_ms2, HIGH);
-		digitalWrite(_motor_ms3, LOW);
-	}
-	else if(step_size == EIGHTH)
-	{
-		digitalWrite(_motor_ms1, HIGH);
-		digitalWrite(_motor_ms2, HIGH);
-		digitalWrite(_motor_ms3, LOW);
-	}
-	else if(step_size == SIXTEENTH)
-	{
-		digitalWrite(_motor_ms1, HIGH);
-		digitalWrite(_motor_ms2, HIGH);
-		digitalWrite(_motor_ms3, HIGH);
-	}
-	else Serial.println("error: incorrect value for step_size"); //print error code
-
-	digitalWrite(_motor_enable, LOW);
-	for(int i=1;i<=number_of_steps;i++)
-	{
-		//low to high transition moves one step
-		digitalWrite(_motor_step, HIGH);
-		delayMicroseconds(step); //low time
-		digitalWrite(_motor_step, LOW);
-		delayMicroseconds(step); // high time
-	}
-	digitalWrite(_motor_step, LOW);
-	digitalWrite(_motor_enable, HIGH);
+	disable();
 }
 
 void quadstep::stall()
 {
-	digitalWrite(_motor_enable, LOW);
+	enable();
+}
+
+void quadstep::set_direction(int number_of_steps) {
+	bool dir = (number_of_steps > 0) ? HIGH : LOW;
+	digitalWrite(_motor_dir, dir);
 }
 
 void quadstep::set_speed(step_modes_t step_size)
 {
-		step = STEPMIN + (_torque * 260) / step_size;
+		pulse_width = STEPMIN + (_torque * 260) / step_size;
+}
+
+void quadstep::set_microstep_format(step_modes_t step_size) {
+	if (step_size == FULL) {
+		digitalWrite(_motor_ms1, LOW);
+		digitalWrite(_motor_ms2, LOW);
+		digitalWrite(_motor_ms3, LOW);
+	} else if (step_size == HALF) {
+		digitalWrite(_motor_ms1, HIGH);
+		digitalWrite(_motor_ms2, LOW);
+		digitalWrite(_motor_ms3, LOW);
+	} else if (step_size == QUARTER) {
+		digitalWrite(_motor_ms1, LOW);
+		digitalWrite(_motor_ms2, HIGH);
+		digitalWrite(_motor_ms3, LOW);
+	} else if (step_size == EIGHTH) {
+		digitalWrite(_motor_ms1, HIGH);
+		digitalWrite(_motor_ms2, HIGH);
+		digitalWrite(_motor_ms3, LOW);
+	} else if (step_size == SIXTEENTH) {
+		digitalWrite(_motor_ms1, HIGH);
+		digitalWrite(_motor_ms2, HIGH);
+		digitalWrite(_motor_ms3, HIGH);
+	} else{
+		Serial.println("error: incorrect value for step_size");
+	}
+}
+
+void quadstep::enable() {
+	digitalWrite(_motor_enable, LOW);
+}
+
+void quadstep::step() {
+	digitalWrite(_motor_step, HIGH);
+	delayMicroseconds (pulse_width); //low time
+	digitalWrite(_motor_step, LOW);
+	delayMicroseconds(pulse_width); // high time
+}
+
+void quadstep::disable() {
+	digitalWrite(_motor_enable, HIGH);
 }

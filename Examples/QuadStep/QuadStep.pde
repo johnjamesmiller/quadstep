@@ -49,10 +49,10 @@ void setup() {
 void loop() {
   
   // step motor 2 for 200 increments CW
-  motor2.motor_go(FULL,-200,2);
+  motor2.go(FULL,-200,2);
   delay(500);
   // step motor 2 for 200 increments CCW
-  motor2.motor_go(FULL,200,2);
+  motor2.go(FULL,200,2);
   delay(500);
  
   // holds the motor in one position with full torque/current
